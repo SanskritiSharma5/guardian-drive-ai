@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GuardianDrive AI — Driver Safety System</title>
+    <meta name="description"
+        content="AI-powered driver safety monitoring system with real-time fatigue detection, distraction alerts, and emergency escalation.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <div id="nightModeOverlay" class="night-mode-overlay"></div>
+    <!-- ======================== SPLASH SCREEN ======================== -->
+    <div class="splash-screen" id="splashScreen">
+        <div class="splash-content">
+            <div class="splash-logo">
+                <svg viewBox="0 0 80 80" fill="none">
+                    <circle cx="40" cy="40" r="36" stroke="url(#splashGrad)" stroke-width="2.5" fill="none" />
+                    <path d="M40 16 L40 64 M24 28 Q40 12 56 28 M24 52 Q40 68 56 52" stroke="url(#splashGrad)"
+                        stroke-width="2.5" stroke-linecap="round" />
+                    <circle cx="40" cy="40" r="7" fill="url(#splashGrad)" />
+                    <defs>
+                        <linearGradient id="splashGrad" x1="0" y1="0" x2="80" y2="80">
+                            <stop offset="0%" stop-color="#00d4ff" />
+                            <stop offset="50%" stop-color="#7b2ff7" />
+                            <stop offset="100%" stop-color="#ec4899" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <h1 class="splash-title">GuardianDrive<span>AI</span></h1>
+            <p class="splash-tagline">Drive Safe, Arrive Safe</p>
+            <button class="btn-splash-next" id="btnSplashNext">
+                <span>Next</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+            </button>
+        </div>
+        <div class="splash-particles">
+            <div class="sp"></div>
+            <div class="sp"></div>
+            <div class="sp"></div>
+            <div class="sp"></div>
+            <div class="sp"></div>
+            <div class="sp"></div>
+        </div>
+    </div>
+
+    <!-- ======================== LOGIN PAGE ======================== -->
+    <div class="login-page" id="loginPage">
+        <div class="login-container">
+            <div class="login-left">
+                <div class="login-brand">
+                    <svg viewBox="0 0 60 60" fill="none">
+                        <circle cx="30" cy="30" r="27" stroke="url(#loginGrad)" stroke-width="2" fill="none" />
+                        <path d="M30 12 L30 48 M18 21 Q30 9 42 21 M18 39 Q30 51 42 39" stroke="url(#loginGrad)"
+                            stroke-width="2" stroke-linecap="round" />
+                        <circle cx="30" cy="30" r="5" fill="url(#loginGrad)" />
+                        <defs>
+                            <linearGradient id="loginGrad" x1="0" y1="0" x2="60" y2="60">
+                                <stop offset="0%" stop-color="#00d4ff" />
+                                <stop offset="100%" stop-color="#7b2ff7" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <h2>GuardianDrive <span>AI</span></h2>
+                </div>
+                <h3 class="login-hero-text">Your AI-Powered<br>Driving Companion</h3>
+                <p class="login-hero-sub">Real-time fatigue detection, voice assistant, and smart navigation — all in
+                    one app.</p>
+                <div class="login-features">
+                    <div class="login-feature"><span>🧠</span> AI Fatigue Detection</div>
+                    <div class="login-feature"><span>🎤</span> Voice Assistant</div>
+                    <div class="login-feature"><span>🗺️</span> Smart Navigation</div>
+                    <div class="login-feature"><span>🎵</span> Spotify Integration</div>
+                </div>
+            </div>
+            <div class="login-right">
+                <div class="auth-card">
+                    <h2 id="authTitle">Welcome Back</h2>
+                    <p class="auth-subtitle" id="authSubtitle">Sign in to start your safe journey</p>
+
+                    <!-- Login Form -->
+                    <div class="auth-form active" id="loginForm">
+                        <div class="input-group">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                            <input type="text" id="loginUsername" placeholder="Username" autocomplete="username">
+                        </div>
+                        <div class="input-group">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" />
+                                <path d="M7 11V7a5 5 0 0110 0v4" />
+                            </svg>
+                            <input type="password" id="loginPassword" placeholder="Password"
+                                autocomplete="current-password">
+                        </div>
+                        <p class="auth-error" id="loginError"></p>
+                        <button class="btn-auth-primary" id="btnLogin">Login</button>
+                        <p class="auth-switch">Don't have an account? <a href="#" id="switchToSignup">Sign Up</a></p>
+                        <div class="demo-hint">
+                            <span>Demo:</span> demo_user / DriveSafe@123
+                        </div>
+                    </div>
+
+                    <!-- Signup Form -->
+                    <div class="auth-form" id="signupForm">
+                        <div class="input-group">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                            <input type="text" id="signupUsername" placeholder="Choose username"
+                                autocomplete="username">
+                        </div>
+                        <div class="input-group">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" />
+                                <path d="M7 11V7a5 5 0 0110 0v4" />
+                            </svg>
+                            <input type="password" id="signupPassword" placeholder="Password (min 6 chars)">
+                        </div>
+                        <div class="input-group">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+                                <polyline points="22 4 12 14.01 9 11.01" />
+                            </svg>
+                            <input type="password" id="signupConfirmPass" placeholder="Confirm password">
+                        </div>
+                        <p class="auth-error" id="signupError"></p>
+                        <button class="btn-auth-primary" id="btnSignup">Create Account</button>
+                        <p class="auth-switch">Already have an account? <a href="#" id="switchToLogin">Sign In</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Particle Background -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- App Container (hidden until logged in) -->
+    <div class="app-container" id="appContainer">
+
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 40 40" fill="none">
+                        <circle cx="20" cy="20" r="18" stroke="url(#brandGrad)" stroke-width="2.5" fill="none" />
+                        <path d="M20 8 L20 32 M12 14 Q20 6 28 14 M12 26 Q20 34 28 26" stroke="url(#brandGrad)"
+                            stroke-width="2" stroke-linecap="round" />
+                        <circle cx="20" cy="20" r="4" fill="url(#brandGrad)" />
+                        <defs>
+                            <linearGradient id="brandGrad" x1="0" y1="0" x2="40" y2="40">
+                                <stop offset="0%" stop-color="#00d4ff" />
+                                <stop offset="100%" stop-color="#7b2ff7" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">GuardianDrive</span>
+                    <span class="brand-sub">AI Safety System</span>
+                </div>
+            </div>
+
+            <div class="nav-links">
+                <a href="#" class="nav-link active" data-page="dashboard" id="nav-dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7" rx="1" />
+                        <rect x="14" y="3" width="7" height="7" rx="1" />
+                        <rect x="3" y="14" width="7" height="7" rx="1" />
+                        <rect x="14" y="14" width="7" height="7" rx="1" />
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-link" data-page="camera" id="nav-camera">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M23 7l-7 5 7 5V7z" />
+                        <rect x="1" y="5" width="15" height="14" rx="2" />
+                    </svg>
+                    <span>Camera Feed</span>
+                </a>
+                <a href="#" class="nav-link" data-page="analytics" id="nav-analytics">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 20V10M12 20V4M6 20v-6" />
+                    </svg>
+                    <span>Analytics</span>
+                </a>
+                <a href="#" class="nav-link" data-page="navigation" id="nav-navigation">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                        <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    <span>Navigation</span>
+                </a>
+                <a href="#" class="nav-link" data-page="chatbot" id="nav-chatbot">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                    </svg>
+                    <span>Guardian AI</span>
+                </a>
+                <a href="#" class="nav-link" data-page="settings" id="nav-settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3" />
+                        <path
+                            d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
+                    </svg>
+                    <span>Settings</span>
+                </a>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="driving-status" id="drivingStatus">
+                    <div class="status-dot"></div>
+                    <span>System Standby</span>
+                </div>
+                <button class="btn-logout" id="btnLogout" title="Logout">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                    </svg>
+                    <span id="currentUser">User</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Top Bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="menu-toggle" id="menuToggle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="3" y1="6" x2="21" y2="6" />
+                            <line x1="3" y1="12" x2="21" y2="12" />
+                            <line x1="3" y1="18" x2="21" y2="18" />
+                        </svg>
+                    </button>
+                    <svg class="topbar-logo" viewBox="0 0 40 40" fill="none"
+                        style="width: 28px; height: 28px; margin-right: 10px;">
+                        <circle cx="20" cy="20" r="18" stroke="url(#brandGrad)" stroke-width="2.5" fill="none" />
+                        <path d="M20 8 L20 32 M12 14 Q20 6 28 14 M12 26 Q20 34 28 26" stroke="url(#brandGrad)"
+                            stroke-width="2" stroke-linecap="round" />
+                        <circle cx="20" cy="20" r="4" fill="url(#brandGrad)" />
+                    </svg>
+                    <h1 class="page-title" id="pageTitle">Dashboard</h1>
+                </div>
+                <div class="topbar-right">
+                    <div class="driving-timer" id="drivingTimer">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                        <span id="timerDisplay">00:00:00</span>
+                    </div>
+                    <div class="speed-display" id="speedDisplay">
+                        <span id="speedValue">0</span>
+                        <span class="speed-unit">km/h</span>
+                    </div>
+                    <button class="btn-start-drive" id="btnStartDrive">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3" />
+                        </svg>
+                        <span>Start Driving</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- ======================== DASHBOARD PAGE ======================== -->
+            <section class="page active" id="page-dashboard">
+                <div class="dashboard-grid">
+
+                    <!-- Fatigue Score Gauge -->
+                    <div class="card card-gauge" id="cardFatigue">
+                        <div class="card-header">
+                            <h3>Fatigue Score</h3>
+                            <span class="badge badge-ok" id="fatigueBadge">Normal</span>
+                        </div>
+                        <div class="gauge-container">
+                            <svg class="gauge-svg" viewBox="0 0 200 200">
+                                <circle class="gauge-bg" cx="100" cy="100" r="85" />
+                                <circle class="gauge-fill" id="gaugeFill" cx="100" cy="100" r="85" />
+                                <text class="gauge-value" id="gaugeValue" x="100" y="95" text-anchor="middle">0</text>
+                                <text class="gauge-label" x="100" y="120" text-anchor="middle">/ 100</text>
+                            </svg>
+                        </div>
+                        <div class="gauge-legend">
+                            <span class="legend-item safe">0–30 Safe</span>
+                            <span class="legend-item caution">30–60 Caution</span>
+                            <span class="legend-item danger">60–100 Danger</span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats Row -->
+                    <div class="card card-stat" id="cardBlink">
+                        <div class="stat-icon blink-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="blinkRate">0</span>
+                            <span class="stat-label">Blinks / min</span>
+                        </div>
+                    </div>
+
+                    <div class="card card-stat" id="cardYawn">
+                        <div class="stat-icon yawn-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                                <line x1="9" y1="9" x2="9.01" y2="9" />
+                                <line x1="15" y1="9" x2="15.01" y2="9" />
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="yawnCount">0</span>
+                            <span class="stat-label">Yawns Detected</span>
+                        </div>
+                    </div>
+
+                    <div class="card card-stat" id="cardHeartRate">
+                        <div class="stat-icon hr-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path
+                                    d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="heartRate">--</span>
+                            <span class="stat-label">Est. Heart Rate</span>
+                        </div>
+                    </div>
+
+                    <div class="card card-stat" id="cardEmotion">
+                        <div class="stat-icon emotion-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                                <line x1="9" y1="9" x2="9.01" y2="9" />
+                                <line x1="15" y1="9" x2="15.01" y2="9" />
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="emotionValue">😐</span>
+                            <span class="stat-label">Emotion</span>
+                        </div>
+                    </div>
+
+                    <div class="card card-stat card-score-glow" id="cardSafetyScore">
+                        <div class="stat-icon safety-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value"><span id="safetyScoreValue">100</span>%</span>
+                            <span class="stat-label">Safety Score</span>
+                        </div>
+                    </div>
+
+                    <div class="card card-stat card-score-glow" id="cardAttentionScore">
+                        <div class="stat-icon attention-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value"><span id="attentionScoreValue">100</span>%</span>
+                            <span class="stat-label">Attention Score</span>
+                        </div>
+                    </div>
+
+                    <!-- Camera Preview -->
+                    <div class="card card-camera-preview" id="cardCameraPreview">
+                        <div class="card-header">
+                            <h3>Live Camera</h3>
+                            <div class="live-indicator" id="liveIndicator">
+                                <span class="live-dot"></span>
+                                LIVE
+                            </div>
+                        </div>
+                        <div class="camera-preview-wrapper">
+                            <video id="videoPreview" autoplay playsinline muted></video>
+                            <canvas id="canvasPreview"></canvas>
+                            <div class="camera-placeholder" id="cameraPlaceholder">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M23 7l-7 5 7 5V7z" />
+                                    <rect x="1" y="5" width="15" height="14" rx="2" />
+                                </svg>
+                                <p>Start driving to activate camera</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Distraction Meter -->
+                    <div class="card card-distraction" id="cardDistraction">
+                        <div class="card-header">
+                            <h3>Distraction Level</h3>
+                        </div>
+                        <div class="distraction-bar-container">
+                            <div class="distraction-bar">
+                                <div class="distraction-fill" id="distractionFill"></div>
+                            </div>
+                            <div class="distraction-labels">
+                                <span>Focused</span>
+                                <span>Distracted</span>
+                            </div>
+                        </div>
+                        <div class="gaze-direction" id="gazeDirection">
+                            <div class="gaze-dot" id="gazeDot"></div>
+                            <span class="gaze-text" id="gazeText">Looking Forward</span>
+                        </div>
+                    </div>
+
+                    <!-- Alert Log -->
+                    <div class="card card-alerts" id="cardAlerts">
+                        <div class="card-header">
+                            <h3>Recent Alerts</h3>
+                            <span class="alert-count" id="alertCount">0</span>
+                        </div>
+                        <div class="alert-list" id="alertList">
+                            <div class="alert-empty">No alerts yet. Stay safe! 🛡️</div>
+                        </div>
+                    </div>
+
+                    <!-- Location Info -->
+                    <div class="card card-location" id="cardLocation">
+                        <div class="card-header">
+                            <h3>Location & Trip</h3>
+                        </div>
+                        <div class="location-info">
+                            <div class="location-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                                    <circle cx="12" cy="10" r="3" />
+                                </svg>
+                                <div>
+                                    <span class="loc-label">Position</span>
+                                    <span class="loc-value" id="locPosition">Waiting for GPS...</span>
+                                </div>
+                            </div>
+                            <div class="location-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <polyline points="12 6 12 12 16 14" />
+                                </svg>
+                                <div>
+                                    <span class="loc-label">Drive Duration</span>
+                                    <span class="loc-value" id="locDuration">00:00:00</span>
+                                </div>
+                            </div>
+                            <div class="location-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                                </svg>
+                                <div>
+                                    <span class="loc-label">Road Type</span>
+                                    <span class="loc-value" id="locRoadType">Unknown</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Spotify Player -->
+                    <div class="card card-spotify" id="cardSpotify">
+                        <div class="card-header">
+                            <h3>🎵 Music Player</h3>
+                            <span class="badge badge-ok">Spotify</span>
+                        </div>
+                        <div class="spotify-player-wrapper" id="spotifyPlayerWrapper">
+                            <iframe id="spotifyEmbed" style="border-radius:12px"
+                                src="https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd?utm_source=generator&theme=0"
+                                width="100%" height="152" frameBorder="0" allowfullscreen=""
+                                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                                loading="lazy">
+                            </iframe>
+                            <p class="spotify-hint">Say "Hey Guardian, play [song name]" to search on Spotify</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ======================== CAMERA PAGE ======================== -->
+            <section class="page" id="page-camera">
+                <div class="camera-fullview">
+                    <div class="camera-feed-container">
+                        <video id="videoFull" autoplay playsinline muted></video>
+                        <canvas id="canvasFull"></canvas>
+                        <div class="camera-overlay-info">
+                            <div class="overlay-stat">
+                                <span class="overlay-label">FATIGUE</span>
+                                <span class="overlay-value" id="overlayFatigue">0%</span>
+                            </div>
+                            <div class="overlay-stat">
+                                <span class="overlay-label">EMOTION</span>
+                                <span class="overlay-value" id="overlayEmotion">😐</span>
+                            </div>
+                            <div class="overlay-stat">
+                                <span class="overlay-label">EYES</span>
+                                <span class="overlay-value" id="overlayEyes">Open</span>
+                            </div>
+                            <div class="overlay-stat">
+                                <span class="overlay-label">GAZE</span>
+                                <span class="overlay-value" id="overlayGaze">Forward</span>
+                            </div>
+                        </div>
+                        <div class="scan-line"></div>
+                    </div>
+                    <div class="camera-side-panel">
+                        <div class="side-card">
+                            <h4>Eye Tracking</h4>
+                            <div class="eye-visual">
+                                <div class="eye-diagram">
+                                    <div class="eye left-eye" id="leftEyeViz">
+                                        <div class="pupil"></div>
+                                    </div>
+                                    <div class="eye right-eye" id="rightEyeViz">
+                                        <div class="pupil"></div>
+                                    </div>
+                                </div>
+                                <div class="eye-stats">
+                                    <div class="eye-stat-item">
+                                        <span>EAR (Left)</span>
+                                        <span id="earLeft">0.00</span>
+                                    </div>
+                                    <div class="eye-stat-item">
+                                        <span>EAR (Right)</span>
+                                        <span id="earRight">0.00</span>
+                                    </div>
+                                    <div class="eye-stat-item">
+                                        <span>Blink Rate</span>
+                                        <span id="earBlinkRate">0/min</span>
+                                    </div>
+                                    <div class="eye-stat-item">
+                                        <span>Closure</span>
+                                        <span id="earClosure">0.0s</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="side-card">
+                            <h4>Head Pose</h4>
+                            <div class="head-pose-visual">
+                                <div class="head-model" id="headModel">
+                                    <div class="head-arrow"></div>
+                                </div>
+                                <div class="head-stats">
+                                    <div class="head-stat-item">
+                                        <span>Pitch</span>
+                                        <span id="headPitch">0°</span>
+                                    </div>
+                                    <div class="head-stat-item">
+                                        <span>Yaw</span>
+                                        <span id="headYaw">0°</span>
+                                    </div>
+                                    <div class="head-stat-item">
+                                        <span>Roll</span>
+                                        <span id="headRoll">0°</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="side-card">
+                            <h4>Mouth / Yawn</h4>
+                            <div class="mouth-stats">
+                                <div class="mouth-stat-item">
+                                    <span>MAR</span>
+                                    <span id="mouthMAR">0.00</span>
+                                </div>
+                                <div class="mouth-stat-item">
+                                    <span>Yawning</span>
+                                    <span id="mouthYawning" class="status-no">No</span>
+                                </div>
+                                <div class="mouth-stat-item">
+                                    <span>Total Yawns</span>
+                                    <span id="mouthYawnCount">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ======================== ANALYTICS PAGE ======================== -->
+            <section class="page" id="page-analytics">
+                <div class="analytics-grid">
+                    <div class="card card-chart-wide">
+                        <div class="card-header">
+                            <h3>Fatigue Over Time (Current Session)</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="chartFatigue"></canvas>
+                        </div>
+                    </div>
+                    <div class="card card-chart">
+                        <div class="card-header">
+                            <h3>Blink Rate Trend</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="chartBlink"></canvas>
+                        </div>
+                    </div>
+                    <div class="card card-chart">
+                        <div class="card-header">
+                            <h3>Emotion Distribution</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="chartEmotion"></canvas>
+                        </div>
+                    </div>
+                    <div class="card card-chart-wide">
+                        <div class="card-header">
+                            <h3>Weekly Driving Summary</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="chartWeekly"></canvas>
+                        </div>
+                    </div>
+                    <div class="card card-session-stats">
+                        <div class="card-header">
+                            <h3>Session Statistics</h3>
+                        </div>
+                        <div class="session-stats-grid">
+                            <div class="session-stat">
+                                <span class="ss-value" id="ssTotalDrive">0h 0m</span>
+                                <span class="ss-label">Total Driving</span>
+                            </div>
+                            <div class="session-stat">
+                                <span class="ss-value" id="ssAvgFatigue">0</span>
+                                <span class="ss-label">Avg Fatigue</span>
+                            </div>
+                            <div class="session-stat">
+                                <span class="ss-value" id="ssTotalAlerts">0</span>
+                                <span class="ss-label">Total Alerts</span>
+                            </div>
+                            <div class="session-stat">
+                                <span class="ss-value" id="ssDistractions">0</span>
+                                <span class="ss-label">Distractions</span>
+                            </div>
+                            <div class="session-stat">
+                                <span class="ss-value" id="ssSafetyScore">100</span>
+                                <span class="ss-label">Safety Score</span>
+                            </div>
+                            <div class="session-stat">
+                                <span class="ss-value" id="ssMaxFatigue">0</span>
+                                <span class="ss-label">Max Fatigue</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-chart-wide">
+                        <div class="card-header">
+                            <h3>Recent Trip History</h3>
+                        </div>
+                        <div class="table-container">
+                            <table class="trip-history-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Duration</th>
+                                        <th>Safety Score</th>
+                                        <th>Total Alerts</th>
+                                        <th>Phone Usage</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tripHistoryBody">
+                                    <tr>
+                                        <td colspan="5" class="text-center">No trips recorded yet.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ======================== CHATBOT PAGE ======================== -->
+            <section class="page" id="page-chatbot">
+                <div class="chatbot-container">
+                    <!-- Alexa-style Assistant Orb -->
+                    <div class="assistant-header">
+                        <div class="assistant-orb-wrapper">
+                            <div class="assistant-orb idle" id="assistantOrb">
+                                <div class="orb-ring ring-1"></div>
+                                <div class="orb-ring ring-2"></div>
+                                <div class="orb-ring ring-3"></div>
+                                <div class="orb-core">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+                                        <path d="M19 10v2a7 7 0 01-14 0v-2" />
+                                        <line x1="12" y1="19" x2="12" y2="23" />
+                                        <line x1="8" y1="23" x2="16" y2="23" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="assistant-info">
+                            <h3 class="assistant-name">Guardian AI</h3>
+                            <p class="assistant-status" id="assistantStatus">Say "Hey Guardian" to wake me up</p>
+                            <p class="voice-transcript" id="voiceText"></p>
+                        </div>
+                    </div>
+
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="chat-message bot">
+                            <div class="chat-avatar bot-avatar">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="10" rx="2" />
+                                    <circle cx="12" cy="5" r="4" />
+                                    <line x1="8" y1="16" x2="8" y2="16.01" />
+                                    <line x1="16" y1="16" x2="16" y2="16.01" />
+                                </svg>
+                            </div>
+                            <div class="chat-bubble">
+                                <p>Hey! I'm <strong>Guardian</strong>, your AI driving companion. 🚗✨</p>
+                                <p>I'm always listening when you're driving. Just say <strong>"Hey Guardian"</strong> to
+                                    wake me up, like Alexa!</p>
+                                <p>Try: <em>"Hey Guardian, tell me a joke"</em> or <em>"Hey Guardian, how am I
+                                        driving?"</em></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-area">
+                        <button class="btn-voice" id="btnVoice" title="Click to wake/sleep Guardian">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+                                <path d="M19 10v2a7 7 0 01-14 0v-2" />
+                                <line x1="12" y1="19" x2="12" y2="23" />
+                                <line x1="8" y1="23" x2="16" y2="23" />
+                            </svg>
+                        </button>
+                        <input type="text" class="chat-input" id="chatInput" placeholder="Or type a message..."
+                            autocomplete="off">
+                        <button class="btn-send" id="btnSend">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="22" y1="2" x2="11" y2="13" />
+                                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ======================== SETTINGS PAGE ======================== -->
+            <section class="page" id="page-settings">
+                <div class="settings-grid">
+                    <div class="card card-settings">
+                        <div class="card-header">
+                            <h3>Emergency Contacts</h3>
+                        </div>
+                        <div class="settings-section">
+                            <div class="contact-list" id="contactList">
+                                <!-- contacts will be appended here -->
+                            </div>
+                            <div class="add-contact-form">
+                                <input type="text" id="contactName" placeholder="Name" class="settings-input">
+                                <input type="tel" id="contactPhone" placeholder="Phone Number" class="settings-input">
+                                <button class="btn-primary" id="btnAddContact">Add Contact</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-settings">
+                        <div class="card-header">
+                            <h3>Alert Sensitivity</h3>
+                        </div>
+                        <div class="settings-section">
+                            <div class="sensitivity-control">
+                                <label>Fatigue Detection Sensitivity</label>
+                                <input type="range" id="sensitivityRange" min="1" max="5" value="3" class="slider">
+                                <div class="slider-labels">
+                                    <span>Low</span>
+                                    <span>Medium</span>
+                                    <span>High</span>
+                                </div>
+                            </div>
+                            <div class="sensitivity-control">
+                                <label>Distraction Alert Threshold (seconds)</label>
+                                <input type="range" id="distractionThreshold" min="1" max="5" value="2" class="slider">
+                                <div class="slider-labels">
+                                    <span>1s</span>
+                                    <span>3s</span>
+                                    <span>5s</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-settings">
+                        <div class="card-header">
+                            <h3>Emergency Options</h3>
+                        </div>
+                        <div class="settings-section">
+                            <div class="toggle-row">
+                                <span>Auto Emergency Calling</span>
+                                <label class="toggle">
+                                    <input type="checkbox" id="toggleAutoCall">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-row">
+                                <span>Send Location on Emergency</span>
+                                <label class="toggle">
+                                    <input type="checkbox" id="toggleSendLocation" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-row">
+                                <span>Voice Alerts</span>
+                                <label class="toggle">
+                                    <input type="checkbox" id="toggleVoiceAlerts" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-row">
+                                <span>Night Mode (Higher Sensitivity)</span>
+                                <label class="toggle">
+                                    <input type="checkbox" id="toggleNightMode">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-row">
+                                <span>Break Reminder (every 2 hrs)</span>
+                                <label class="toggle">
+                                    <input type="checkbox" id="toggleBreakReminder" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-settings">
+                        <div class="card-header">
+                            <h3>Permissions</h3>
+                        </div>
+                        <div class="settings-section">
+                            <div class="permission-row">
+                                <div class="perm-info">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M23 7l-7 5 7 5V7z" />
+                                        <rect x="1" y="5" width="15" height="14" rx="2" />
+                                    </svg>
+                                    <span>Camera</span>
+                                </div>
+                                <span class="perm-status" id="permCamera">Not Granted</span>
+                            </div>
+                            <div class="permission-row">
+                                <div class="perm-info">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+                                        <path d="M19 10v2a7 7 0 01-14 0v-2" />
+                                    </svg>
+                                    <span>Microphone</span>
+                                </div>
+                                <span class="perm-status" id="permMic">Not Granted</span>
+                            </div>
+                            <div class="permission-row">
+                                <div class="perm-info">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                                        <circle cx="12" cy="10" r="3" />
+                                    </svg>
+                                    <span>Location</span>
+                                </div>
+                                <span class="perm-status" id="permLocation">Not Granted</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-settings">
+                        <div class="card-header">
+                            <h3>Data Management</h3>
+                        </div>
+                        <div class="settings-section">
+                            <button class="btn-secondary" id="btnExportData">Export Session Data</button>
+                            <button class="btn-danger" id="btnClearData">Clear All Data</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ======================== NAVIGATION PAGE ======================== -->
+            <section class="page" id="page-navigation">
+                <div class="navigation-container">
+                    <div class="nav-controls">
+                        <div class="card nav-search-card">
+                            <h3>🗺️ Where do you want to go?</h3>
+                            <div class="nav-search-form">
+                                <input type="text" id="navDestination" class="settings-input"
+                                    placeholder="Enter destination (e.g., Mumbai, Delhi, nearest gas station)"
+                                    autocomplete="off">
+                                <button class="btn-primary" id="btnNavigate">Navigate</button>
+                                <button class="btn-voice-nav" id="btnVoiceNav" title="Say your destination">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+                                        <path d="M19 10v2a7 7 0 01-14 0v-2" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="nav-info" id="navInfo">
+                                <div class="nav-info-item">
+                                    <span class="nav-info-label">Current Location</span>
+                                    <span class="nav-info-value" id="navCurrentLoc">Acquiring GPS...</span>
+                                </div>
+                                <div class="nav-info-item">
+                                    <span class="nav-info-label">Destination</span>
+                                    <span class="nav-info-value" id="navDestDisplay">Not set</span>
+                                </div>
+                                <div class="nav-info-item">
+                                    <span class="nav-info-label">Distance</span>
+                                    <span class="nav-info-value" id="navDistance">—</span>
+                                </div>
+                                <div class="nav-info-item">
+                                    <span class="nav-info-label">ETA</span>
+                                    <span class="nav-info-value" id="navETA">—</span>
+                                </div>
+                            </div>
+
+                            <div class="nav-quick-actions">
+                                <button class="btn-sos" id="btnCallAmbulance" onclick="window.location.href='tel:911'"
+                                    style="background: var(--danger-red); border-color: var(--danger-red);">📞 Call
+                                    Ambulance</button>
+                                <button class="btn-sos" id="btnCallPolice" onclick="window.location.href='tel:911'"
+                                    style="background: var(--accent-blue); border-color: var(--accent-blue);">🚓 Call
+                                    Police</button>
+                                <button class="btn-share" id="btnShareLocation">📍 Share My Location</button>
+                                <button class="btn-sos" id="btnNavHospital">🏥 Navigate to Hospital</button>
+                                <button class="btn-sos" id="btnNavPolice">🚓 Nearest Police Stations</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nav-map-wrapper">
+                        <div id="navMap" class="nav-map"></div>
+                        <div class="map-overlay-btn">
+                            <button class="btn-locate" id="btnLocateMe" title="Center on my location">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="3" />
+                                    <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+        </main>
+    </div>
+
+
+    <!-- ======================== NEARBY PLACES MODAL ======================== -->
+    <div class="nearby-modal-overlay" id="nearbyModalOverlay">
+        <div class="nearby-modal" id="nearbyModal">
+            <div class="nearby-header">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <svg class="topbar-logo" viewBox="0 0 40 40" fill="none" style="width: 32px; height: 32px;">
+                        <circle cx="20" cy="20" r="18" stroke="url(#brandGrad)" stroke-width="2.5" fill="none" />
+                        <path d="M20 8 L20 32 M12 14 Q20 6 28 14 M12 26 Q20 34 28 26" stroke="url(#brandGrad)"
+                            stroke-width="2" stroke-linecap="round" />
+                        <circle cx="20" cy="20" r="4" fill="url(#brandGrad)" />
+                    </svg>
+                    <h2 id="nearbyTitle">Nearby Places</h2>
+                </div>
+                <button class="btn-close-modal" id="btnNearbyClose">✕</button>
+            </div>
+            <div class="nearby-map-container" id="nearbyMap"></div>
+            <div class="nearby-results" id="nearbyResults">
+                <div class="text-center" style="padding: 40px; color: var(--text-muted)">Loading nearby locations...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================== EMERGENCY OVERLAY ======================== -->
+    <div class="emergency-overlay" id="emergencyOverlay">
+        <div class="emergency-content">
+            <div class="emergency-pulse"></div>
+            <div class="emergency-icon">🚨</div>
+            <h2>EMERGENCY DETECTED</h2>
+            <p class="emergency-msg" id="emergencyMsg">Driver unresponsive — initiating emergency protocol</p>
+            <div class="emergency-countdown">
+                <svg class="countdown-svg" viewBox="0 0 120 120">
+                    <circle class="countdown-bg" cx="60" cy="60" r="54" />
+                    <circle class="countdown-fill" id="countdownFill" cx="60" cy="60" r="54" />
+                </svg>
+                <span class="countdown-number" id="countdownNumber">15</span>
+            </div>
+            <p class="emergency-sub">Contacting emergency services in <span id="countdownText">15</span> seconds...</p>
+            <button class="btn-im-ok" id="btnImOk">I'm Okay — Cancel</button>
+        </div>
+    </div>
+
+    <!-- ======================== ALERT TOAST ======================== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ======================== PERMISSION MODAL ======================== -->
+    <div class="modal-overlay" id="permissionModal">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <svg viewBox="0 0 64 64" fill="none">
+                    <circle cx="32" cy="32" r="30" stroke="url(#modalGrad)" stroke-width="2" fill="none" />
+                    <path d="M32 16v20M32 42v2" stroke="url(#modalGrad)" stroke-width="3" stroke-linecap="round" />
+                    <defs>
+                        <linearGradient id="modalGrad" x1="0" y1="0" x2="64" y2="64">
+                            <stop offset="0%" stop-color="#00d4ff" />
+                            <stop offset="100%" stop-color="#7b2ff7" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <h2>Welcome to GuardianDrive AI</h2>
+            <p>To protect you while driving, we need access to:</p>
+            <div class="perm-request-list">
+                <div class="perm-request-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M23 7l-7 5 7 5V7z" />
+                        <rect x="1" y="5" width="15" height="14" rx="2" />
+                    </svg>
+                    <div>
+                        <strong>Camera</strong>
+                        <span>Monitor eye movement & facial expressions</span>
+                    </div>
+                </div>
+                <div class="perm-request-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z" />
+                        <path d="M19 10v2a7 7 0 01-14 0v-2" />
+                    </svg>
+                    <div>
+                        <strong>Microphone</strong>
+                        <span>Voice commands & chatbot interaction</span>
+                    </div>
+                </div>
+                <div class="perm-request-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                        <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    <div>
+                        <strong>Location</strong>
+                        <span>Speed detection & emergency location sharing</span>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-primary btn-large" id="btnGrantPerms">Grant Permissions & Continue</button>
+            <button class="btn-text" id="btnSkipPerms">Skip for now</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1640029074/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3.1620248257/drawing_utils.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/camera.js"></script>
+    <script src="js/analysis.js"></script>
+    <script src="js/alerts.js"></script>
+    <script src="js/chatbot.js"></script>
+    <script src="js/location.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/navigation.js"></script>
+</body>
+
+</html>
